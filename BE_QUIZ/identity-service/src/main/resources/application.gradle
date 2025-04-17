@@ -1,0 +1,1 @@
+implementation 'io.github.openfeign:feign-httpclient:11.9'

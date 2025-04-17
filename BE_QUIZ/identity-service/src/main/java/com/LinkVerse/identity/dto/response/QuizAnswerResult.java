@@ -1,0 +1,17 @@
+package com.LinkVerse.identity.dto.response;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class QuizAnswerResult {
+    String questionId;
+    String questionContent;
+    String selectedAnswer;
+    boolean isCorrect;
+    String correctAnswer;
+}
