@@ -57,7 +57,7 @@ public class User {
     LocalDateTime createdAt;
 
     Date dateOfBirth;
-    String City;
+    String city;
     Gender gender;
     String bio;
 
@@ -72,6 +72,13 @@ public class User {
     }
 
     String fcmToken;
+@ManyToMany(fetch = FetchType.EAGER)
+@JoinTable(
+    name = "user_permissions",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "permission_name")
+)
+Set<Permission> permissions;
 
     @ElementCollection
     @CollectionTable(name = "user_known_devices", joinColumns = @JoinColumn(name = "user_id"))

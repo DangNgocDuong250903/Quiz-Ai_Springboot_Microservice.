@@ -17,4 +17,7 @@ public class QuizResultResponse {
     int correctAnswers;
     double scorePercent;
     List<QuizAnswerResult> results;
+    private String feedback;
+    String cheatingAnalysis;
+
 }

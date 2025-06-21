@@ -13,4 +13,5 @@ import java.util.List;
 public class QuizSubmitRequest {
     Long submissionId;
     List<AnswerSubmissionRequest> answers;
+    private int tabSwitchCount;
 }

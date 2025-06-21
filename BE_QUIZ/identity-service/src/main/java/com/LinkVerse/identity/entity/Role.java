@@ -2,9 +2,7 @@ package com.LinkVerse.identity.entity;
 
 import java.util.Set;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,11 +15,17 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Role {
-    @Id
-    String name;
+       @Id
+      String name;
 
     String description;
 
-    @ManyToMany
-    Set<Permission> permissions;
+       @ManyToMany
+@JoinTable(
+    name = "role_permissions",
+    joinColumns = @JoinColumn(name = "role_name", referencedColumnName = "name"),  // bên Role
+    inverseJoinColumns = @JoinColumn(name = "permission_name", referencedColumnName = "name")  // bên Permission
+)
+Set<Permission> permissions;
+
 }

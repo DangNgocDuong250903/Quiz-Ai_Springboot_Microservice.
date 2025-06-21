@@ -2,6 +2,7 @@ package com.LinkVerse.identity.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.LinkVerse.identity.dto.request.ApiResponse;
@@ -20,25 +21,41 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class PermissionController {
-    PermissionService permissionService;
+ private final PermissionService permissionService;
 
     @PostMapping
-    ApiResponse<PermissionResponse> create(@RequestBody PermissionRequest request) {
-        return ApiResponse.<PermissionResponse>builder()
-                .result(permissionService.create(request))
-                .build();
+    public ResponseEntity<ApiResponse<PermissionResponse>> create(@RequestBody PermissionRequest request) {
+        var response = permissionService.create(request);
+        return ResponseEntity.ok(ApiResponse.<PermissionResponse>builder()
+                .message("Permission created successfully")
+                .result(response)
+                .build());
     }
 
     @GetMapping
-    ApiResponse<List<PermissionResponse>> getAll() {
-        return ApiResponse.<List<PermissionResponse>>builder()
-                .result(permissionService.getAll())
-                .build();
+    public ResponseEntity<ApiResponse<List<PermissionResponse>>> getAll() {
+        var response = permissionService.getAll();
+        return ResponseEntity.ok(ApiResponse.<List<PermissionResponse>>builder()
+                .message("List of permissions")
+                .result(response)
+                .build());
     }
 
-    @DeleteMapping("/{permission}")
-    ApiResponse<Void> delete(@PathVariable String permission) {
-        permissionService.delete(permission);
-        return ApiResponse.<Void>builder().build();
+    @DeleteMapping("/{name}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable String name) {
+        permissionService.delete(name);
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .message("Permission deleted")
+                .build());
+    }
+
+    @PostMapping("/assign-to-user")
+    public ResponseEntity<ApiResponse<Void>> assignPermissionToUser(
+            @RequestParam String userId,
+            @RequestParam String permissionName) {
+        permissionService.assignPermissionToUser(userId, permissionName);
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .message("Permission assigned to user")
+                .build());
     }
 }

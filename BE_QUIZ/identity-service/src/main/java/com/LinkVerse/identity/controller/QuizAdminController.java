@@ -1,7 +1,7 @@
 package com.LinkVerse.identity.controller;
 
-import com.LinkVerse.identity.dto.request.ApiResponse;
 import com.LinkVerse.identity.dto.request.*;
+
 import com.LinkVerse.identity.service.QuizAdminService;
 
 import jakarta.validation.Valid;
@@ -37,6 +37,15 @@ public class QuizAdminController {
         quizAdminService.createQuestion(request);
         return ApiResponse.<String>builder().result("Question added").build();
     }
+@PostMapping("/questions/update")
+public ApiResponse<String> updateQuestion(@RequestBody UpdateQuestionRequest request) {
+    return quizAdminService.updateQuestion(request);
+}
+
+@PostMapping("/answers/update")
+public ApiResponse<String> updateAnswer(@RequestBody UpdateAnswerRequest request) {
+    return quizAdminService.updateAnswer(request);
+}
 
     @PostMapping("/answers")
     public ApiResponse<String> createAnswer(@RequestBody @Valid CreateAnswerRequest request) {

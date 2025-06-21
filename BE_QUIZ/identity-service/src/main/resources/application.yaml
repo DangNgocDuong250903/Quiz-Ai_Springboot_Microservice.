@@ -5,7 +5,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/userss
+    url: jdbc:mysql://localhost:3306/quiz
     driverClassName: "com.mysql.cj.jdbc.Driver"
     username: root
     password: root
@@ -42,6 +42,13 @@ jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 240000
   refreshable-duration: 720000
+#gemini:
+#  api:
+#    key: AIzaSyCNl353aX69zYMv3kLU7i64rNLUnrCUAMI
+#    url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+gemini:
+  api:
+    url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCNl353aX69zYMv3kLU7i64rNLUnrCUAMI"
 
 app:
   services:

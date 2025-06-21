@@ -1,19 +1,21 @@
 package com.LinkVerse.identity.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.LinkVerse.identity.dto.request.PermissionRequest;
 import com.LinkVerse.identity.dto.response.PermissionResponse;
 import com.LinkVerse.identity.entity.Permission;
+import com.LinkVerse.identity.entity.User;
 import com.LinkVerse.identity.mapper.PermissionMapper;
 import com.LinkVerse.identity.repository.PermissionRepository;
-
+import com.LinkVerse.identity.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,38 @@ import lombok.extern.slf4j.Slf4j;
 public class PermissionService {
     PermissionRepository permissionRepository;
     PermissionMapper permissionMapper;
+    @Autowired
+    UserRepository userRepository;
+
+    public void assignPermissionToUser(String userId, String permissionName) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        var permission = permissionRepository.findById(permissionName)
+                .orElseThrow(() -> new RuntimeException("Permission not found"));
+
+        if (user.getPermissions() == null) {
+            user.setPermissions(new HashSet<>());
+        }
+
+        user.getPermissions().add(permission);
+        userRepository.save(user);
+    }
+
+public boolean hasPermission(User user, String permissionName) {
+    // Check permission gán trực tiếp
+    boolean direct = user.getPermissions() != null &&
+                     user.getPermissions().stream().anyMatch(p -> p.getName().equalsIgnoreCase(permissionName));
+
+    // Check permission từ Role
+    boolean viaRole = user.getRoles() != null &&
+                      user.getRoles().stream()
+                          .flatMap(role -> role.getPermissions().stream())
+                          .anyMatch(p -> p.getName().equalsIgnoreCase(permissionName));
+
+    return direct || viaRole;
+}
+
+
 
     public PermissionResponse create(PermissionRequest request) {
         Permission permission = permissionMapper.toPermission(request);

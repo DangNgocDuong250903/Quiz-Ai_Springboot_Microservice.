@@ -1,14 +1,13 @@
 package com.LinkVerse.identity.service;
 
-import com.LinkVerse.identity.dto.ApiResponse;
 import com.LinkVerse.identity.dto.request.*;
 import com.LinkVerse.identity.entity.*;
 import com.LinkVerse.identity.exception.AppException;
 import com.LinkVerse.identity.exception.ErrorCode;
 import com.LinkVerse.identity.repository.*;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.AccessLevel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +23,24 @@ public class QuizAdminService {
     AnswerRepository answerRepository;
     AnswerSubmissionRepository answerSubmissionRepository;
     QuizSubmissionRepository quizSubmissionRepository;
+    GeminiQuestionGeneratorService geminiQuestionGeneratorService;
+    GeminiQuizParser geminiQuizParser;
+
+    public ApiResponse<String> generateAutoQuiz(AutoQuizRequest request) {
+        String resultText = geminiQuestionGeneratorService.generateQuestions(
+                request.getTopic(), request.getNumQuestions());
+
+        if (resultText == null || resultText.contains("Không thể")) {
+            throw new RuntimeException("Không nhận được dữ liệu hợp lệ từ Gemini.");
+        }
+
+        geminiQuizParser.saveQuizFromAIText(request.getSubjectId(), request.getQuizTitle(), resultText);
+
+        return ApiResponse.<String>builder()
+                .message("Tạo và lưu đề thi tự động thành công.")
+                .result(resultText)
+                .build();
+    }
 
     public ApiResponse<String> createSubject(CreateSubjectRequest request) {
         if (subjectRepository.existsByName(request.getName())) {
@@ -81,7 +98,7 @@ public class QuizAdminService {
 
         Answer answer = new Answer();
         answer.setContent(request.getContent());
-    answer.setIsCorrect(Boolean.TRUE.equals(request.getIsCorrect()));
+        answer.setIsCorrect(Boolean.TRUE.equals(request.getIsCorrect()));
         answer.setQuestion(question);
         answerRepository.save(answer);
 
@@ -90,6 +107,31 @@ public class QuizAdminService {
                 .result(answer.getContent())
                 .build();
     }
+public ApiResponse<String> updateQuestion(UpdateQuestionRequest request) {
+    Question question = questionRepository.findById(request.getQuestionId())
+            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+
+    question.setContent(request.getNewContent());
+    questionRepository.save(question);
+
+    return ApiResponse.<String>builder()
+            .message("Question updated successfully")
+            .result(question.getContent())
+            .build();
+}
+public ApiResponse<String> updateAnswer(UpdateAnswerRequest request) {
+    Answer answer = answerRepository.findById(request.getAnswerId())
+            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+
+    answer.setContent(request.getNewContent());
+    answer.setIsCorrect(Boolean.TRUE.equals(request.getIsCorrect()));
+    answerRepository.save(answer);
+
+    return ApiResponse.<String>builder()
+            .message("Answer updated successfully")
+            .result(answer.getContent())
+            .build();
+}
 
     public ApiResponse<String> deleteSubject(Long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)

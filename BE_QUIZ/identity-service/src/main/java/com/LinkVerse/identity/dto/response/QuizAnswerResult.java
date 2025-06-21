@@ -12,6 +12,6 @@ public class QuizAnswerResult {
     String questionId;
     String questionContent;
     String selectedAnswer;
-    boolean isCorrect;
+    Boolean isCorrect;
     String correctAnswer;
 }
