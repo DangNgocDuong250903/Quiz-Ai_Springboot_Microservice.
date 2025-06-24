@@ -2,6 +2,7 @@ package com.LinkVerse.identity.controller;
 
 import com.LinkVerse.identity.dto.request.*;
 
+import com.LinkVerse.identity.entity.Subject;
 import com.LinkVerse.identity.service.QuizAdminService;
 
 import jakarta.validation.Valid;
@@ -11,6 +12,8 @@ import lombok.AccessLevel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/quiz")
@@ -25,7 +28,10 @@ public class QuizAdminController {
         quizAdminService.createSubject(request);
         return ApiResponse.<String>builder().result("Subject created").build();
     }
-
+      @GetMapping("/subjects")
+    public ApiResponse<List<Subject>> getAllSubjects() {
+        return quizAdminService.getAllSubject();
+    }
     @PostMapping("/quizzes")
     public ApiResponse<String> createQuiz(@RequestBody @Valid CreateQuizRequest request) {
         quizAdminService.createQuiz(request);

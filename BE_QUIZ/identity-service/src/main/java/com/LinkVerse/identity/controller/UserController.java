@@ -52,7 +52,7 @@ public class UserController {
                 .result(userService.createUser(request))
                 .build();
     }
-
+    
     @GetMapping
     ApiResponse<Page<UserResponse>> getUsers(@RequestParam int page, @RequestParam int size) {
         return ApiResponse.<Page<UserResponse>>builder()

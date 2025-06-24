@@ -72,7 +72,7 @@ public class ApplicationInitConfig {
                     .orElseGet(() -> roleRepository.save(
                             Role.builder()
                                     .name(PredefinedRole.USER_ROLE)
-                                    .description("User role")
+                                    .description("USER ROLE")
                                     .build()
                     ));
 
@@ -85,7 +85,7 @@ public class ApplicationInitConfig {
                     .orElseGet(() -> roleRepository.save(
                             Role.builder()
                                     .name(PredefinedRole.ADMIN_ROLE)
-                                    .description("Admin role")
+                                    .description("ADMIN ROLE")
                                     .build()
                     ));
 

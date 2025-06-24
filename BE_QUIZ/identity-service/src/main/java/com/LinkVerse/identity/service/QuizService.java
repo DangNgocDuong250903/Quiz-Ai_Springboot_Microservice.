@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class QuizService {
     GeminiAIService geminiAIService;
     GeminiCheatingCheckService geminiCheatingCheckService;
 
+    @PreAuthorize("hasAnyAuthority('QUIZ_VIEW', 'QUIZ_MANAGE', 'USER_VIEW','ADMIN')")
     public List<QuizResponse> getQuizzesBySubject(Long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
@@ -51,6 +53,7 @@ public class QuizService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAnyAuthority('QUIZ_VIEW', 'QUIZ_MANAGE', 'USER_VIEW','ADMIN')")
     public QuizSubmissionResponse startQuiz(Long quizId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
@@ -92,6 +95,7 @@ public class QuizService {
                 .build();
     }
 
+    @PreAuthorize("hasAnyAuthority('QUIZ_VIEW', 'QUIZ_MANAGE', 'USER_VIEW','ROLE_ADMIN')")
     public QuizResultResponse submitQuiz(QuizSubmitRequest request) {
         QuizSubmission submission = submissionRepository.findById(request.getSubmissionId())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
@@ -167,6 +171,7 @@ public class QuizService {
                 .build();
     }
 
+    @PreAuthorize("hasAnyAuthority('QUIZ_VIEW', 'QUIZ_MANAGE', 'USER_VIEW','ROLE_ADMIN')")
     public List<SubjectResponse> getAllSubjects() {
         return subjectRepository.findAll().stream()
                 .map(subject -> SubjectResponse.builder()
@@ -176,6 +181,7 @@ public class QuizService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAnyAuthority('QUIZ_VIEW', 'QUIZ_MANAGE', 'USER_VIEW','ROLE_ADMIN')")
     public List<QuizResponse> getAllQuizzes() {
         return quizRepository.findAll().stream()
                 .map(quiz -> QuizResponse.builder()
@@ -188,6 +194,7 @@ public class QuizService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAnyAuthority('QUIZ_VIEW', 'QUIZ_MANAGE', 'USER_VIEW','ROLE_ADMIN')")
     public List<AnswerResponse> getAllAnswers() {
         return answerRepository.findAll().stream()
                 .map(answer -> AnswerResponse.builder()
@@ -197,6 +204,7 @@ public class QuizService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAnyAuthority('QUIZ_VIEW', 'QUIZ_MANAGE', 'USER_VIEW','ROLE_ADMIN')")
     public List<QuestionResponse> getAllQuestions() {
         return questionRepository.findAll().stream()
                 .map(question -> QuestionResponse.builder()

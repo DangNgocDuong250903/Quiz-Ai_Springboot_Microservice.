@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -27,6 +28,7 @@ public class PermissionService {
     @Autowired
     UserRepository userRepository;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void assignPermissionToUser(String userId, String permissionName) {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -41,6 +43,7 @@ public class PermissionService {
         userRepository.save(user);
     }
 
+        @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public boolean hasPermission(User user, String permissionName) {
     // Check permission gán trực tiếp
     boolean direct = user.getPermissions() != null &&
@@ -56,18 +59,20 @@ public boolean hasPermission(User user, String permissionName) {
 }
 
 
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public PermissionResponse create(PermissionRequest request) {
         Permission permission = permissionMapper.toPermission(request);
         permission = permissionRepository.save(permission);
         return permissionMapper.toPermissionResponse(permission);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<PermissionResponse> getAll() {
         var permissions = permissionRepository.findAll();
         return permissions.stream().map(permissionMapper::toPermissionResponse).toList();
     }
 
+        @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void delete(String permission) {
         permissionRepository.deleteById(permission);
     }

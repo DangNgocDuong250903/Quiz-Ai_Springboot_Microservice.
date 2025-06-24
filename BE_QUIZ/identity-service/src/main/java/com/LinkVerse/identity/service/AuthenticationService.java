@@ -1,17 +1,5 @@
 package com.LinkVerse.identity.service;
 
-import java.text.ParseException;
-import java.util.*;
-
-import jakarta.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
 import com.LinkVerse.identity.dto.request.*;
 import com.LinkVerse.identity.dto.response.AuthenticationResponse;
 import com.LinkVerse.identity.dto.response.IntrospectResponse;
@@ -31,13 +19,22 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.text.ParseException;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -279,6 +276,24 @@ public class AuthenticationService {
                 .build();
     }
 
+    private List<String> buildAuthorities(User user) {
+        List<String> authorities = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(user.getRoles())) {
+            for (var role : user.getRoles()) {
+                authorities.add("ROLE_" + role.getName());
+
+                if (!CollectionUtils.isEmpty(role.getPermissions())) {
+                    for (var permission : role.getPermissions()) {
+                        authorities.add(permission.getName());
+                    }
+                }
+            }
+        }
+
+        return authorities;
+    }
+
     public TokenInfo generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -294,6 +309,7 @@ public class AuthenticationService {
                 .claim("scope", buildScope(user))
                 .claim("userId", user.getId())
                 .claim("ProfileID", user.getProfileId())
+                .claim("authorities", buildAuthorities(user)) //  Đây là điểm quan trọng để gắn quyền vào token
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());

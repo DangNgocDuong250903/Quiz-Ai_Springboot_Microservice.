@@ -8,9 +8,12 @@ import com.LinkVerse.identity.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +45,7 @@ public class QuizAdminService {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ApiResponse<String> createSubject(CreateSubjectRequest request) {
         if (subjectRepository.existsByName(request.getName())) {
             throw new AppException(ErrorCode.ALREADY_EXISTED);
@@ -57,6 +61,7 @@ public class QuizAdminService {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ApiResponse<String> createQuiz(CreateQuizRequest request) {
         Subject subject = subjectRepository.findById(request.getSubjectId())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
@@ -77,6 +82,7 @@ public class QuizAdminService {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ApiResponse<String> createQuestion(CreateQuestionRequest request) {
         Quiz quiz = quizRepository.findById(request.getQuizId())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
@@ -92,6 +98,7 @@ public class QuizAdminService {
                 .build();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ApiResponse<String> createAnswer(CreateAnswerRequest request) {
         Question question = questionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
@@ -107,32 +114,46 @@ public class QuizAdminService {
                 .result(answer.getContent())
                 .build();
     }
-public ApiResponse<String> updateQuestion(UpdateQuestionRequest request) {
-    Question question = questionRepository.findById(request.getQuestionId())
-            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
 
-    question.setContent(request.getNewContent());
-    questionRepository.save(question);
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ApiResponse<String> updateQuestion(UpdateQuestionRequest request) {
+        Question question = questionRepository.findById(request.getQuestionId())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
 
-    return ApiResponse.<String>builder()
-            .message("Question updated successfully")
-            .result(question.getContent())
+        question.setContent(request.getNewContent());
+        questionRepository.save(question);
+
+        return ApiResponse.<String>builder()
+                .message("Question updated successfully")
+                .result(question.getContent())
+                .build();
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ApiResponse<String> updateAnswer(UpdateAnswerRequest request) {
+        Answer answer = answerRepository.findById(request.getAnswerId())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+
+        answer.setContent(request.getNewContent());
+        answer.setIsCorrect(Boolean.TRUE.equals(request.getIsCorrect()));
+        answerRepository.save(answer);
+
+        return ApiResponse.<String>builder()
+                .message("Answer updated successfully")
+                .result(answer.getContent())
+                .build();
+    }
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+public ApiResponse<List<Subject>> getAllSubject() {
+    List<Subject> subjects = subjectRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+    return ApiResponse.<List<Subject>>builder()
+            .message("Danh sách môn học được truy xuất thành công")
+            .result(subjects)
             .build();
 }
-public ApiResponse<String> updateAnswer(UpdateAnswerRequest request) {
-    Answer answer = answerRepository.findById(request.getAnswerId())
-            .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
 
-    answer.setContent(request.getNewContent());
-    answer.setIsCorrect(Boolean.TRUE.equals(request.getIsCorrect()));
-    answerRepository.save(answer);
 
-    return ApiResponse.<String>builder()
-            .message("Answer updated successfully")
-            .result(answer.getContent())
-            .build();
-}
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ApiResponse<String> deleteSubject(Long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
