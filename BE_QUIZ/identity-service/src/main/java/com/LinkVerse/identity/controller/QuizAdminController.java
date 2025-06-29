@@ -2,6 +2,7 @@ package com.LinkVerse.identity.controller;
 
 import com.LinkVerse.identity.dto.request.*;
 
+import com.LinkVerse.identity.dto.response.SubjectResponse;
 import com.LinkVerse.identity.entity.Subject;
 import com.LinkVerse.identity.service.QuizAdminService;
 
@@ -28,10 +29,16 @@ public class QuizAdminController {
         quizAdminService.createSubject(request);
         return ApiResponse.<String>builder().result("Subject created").build();
     }
-      @GetMapping("/subjects")
-    public ApiResponse<List<Subject>> getAllSubjects() {
-        return quizAdminService.getAllSubject();
-    }
+ @GetMapping("/subjects")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+public ApiResponse<List<SubjectResponse>> getAllSubjects() {
+    return ApiResponse.<List<SubjectResponse>>builder()
+            .code(1000)
+            .message("Danh sách môn học được truy xuất thành công")
+            .result(quizAdminService.getAllSubjects())
+            .build();
+}
+
     @PostMapping("/quizzes")
     public ApiResponse<String> createQuiz(@RequestBody @Valid CreateQuizRequest request) {
         quizAdminService.createQuiz(request);

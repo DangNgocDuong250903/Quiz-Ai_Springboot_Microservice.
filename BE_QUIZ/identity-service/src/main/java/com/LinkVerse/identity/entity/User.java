@@ -1,16 +1,14 @@
 package com.LinkVerse.identity.entity;
 
+import com.LinkVerse.identity.validator.PhoneValidator.PhoneConstraint;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
-import jakarta.persistence.*;
-
-import com.LinkVerse.identity.validator.PhoneValidator.PhoneConstraint;
-
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -65,24 +63,22 @@ public class User {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
-
     String fcmToken;
-@ManyToMany(fetch = FetchType.EAGER)
-@JoinTable(
-    name = "user_permissions",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "permission_name")
-)
-Set<Permission> permissions;
-
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_permissions",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_name")
+    )
+    Set<Permission> permissions;
     @ElementCollection
     @CollectionTable(name = "user_known_devices", joinColumns = @JoinColumn(name = "user_id"))
     private List<DeviceInfo> knownDevices;
     @Column(unique = true)
     String mssv;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

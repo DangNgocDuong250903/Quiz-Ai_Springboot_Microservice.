@@ -1,6 +1,7 @@
 package com.LinkVerse.identity.service;
 
 import com.LinkVerse.identity.dto.request.*;
+import com.LinkVerse.identity.dto.response.SubjectResponse;
 import com.LinkVerse.identity.entity.*;
 import com.LinkVerse.identity.exception.AppException;
 import com.LinkVerse.identity.exception.ErrorCode;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -144,13 +146,17 @@ public class QuizAdminService {
                 .build();
     }
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-public ApiResponse<List<Subject>> getAllSubject() {
+public List<SubjectResponse> getAllSubjects() {
     List<Subject> subjects = subjectRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
-    return ApiResponse.<List<Subject>>builder()
-            .message("Danh sách môn học được truy xuất thành công")
-            .result(subjects)
-            .build();
+
+    return subjects.stream()
+            .map(subject -> SubjectResponse.builder()
+                    .id(subject.getId())
+                    .name(subject.getName())
+                    .build())
+            .collect(Collectors.toList());
 }
+
 
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
