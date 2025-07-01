@@ -28,4 +28,5 @@ public class QuizSubmission {
 
     @OneToMany(mappedBy = "submission", cascade = CascadeType.ALL)
     List<AnswerSubmission> answers;
+    Double score;
 }
