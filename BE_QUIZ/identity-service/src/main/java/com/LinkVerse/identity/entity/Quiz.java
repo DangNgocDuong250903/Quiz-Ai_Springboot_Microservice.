@@ -1,5 +1,6 @@
 package com.LinkVerse.identity.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -33,6 +35,8 @@ public class Quiz {
     @Column(name = "expiration_time")
     LocalDateTime expirationTime; // Ngày hết hạn truy cập đề thi (có thể null)
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
-    List<Question> questions;
+   @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+   @JsonManagedReference
+   Set<Question> questions; // đổi từ List -> Set
+
 }

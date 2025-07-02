@@ -38,6 +38,7 @@ public class QuizService {
     GeminiAIService geminiAIService;
     GeminiCheatingCheckService geminiCheatingCheckService;
 
+
     @PreAuthorize("hasAnyAuthority('QUIZ_VIEW', 'QUIZ_MANAGE', 'USER_VIEW','ADMIN')")
     public List<QuizResponse> getQuizzesBySubject(Long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)

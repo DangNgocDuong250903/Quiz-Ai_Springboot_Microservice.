@@ -47,27 +47,25 @@ public class ApplicationInitConfig {
             RoleRepository roleRepository,
             PermissionRepository permissionRepository
     ) {
-        log.info("Initializing application.....");
+        log.info("Initializing application...");
 
         return args -> {
-            // Tạo quyền mặc định
+            // ✅ Tạo quyền mặc định nếu chưa có
             List<String> defaultPermissions = List.of(
-                    "QUIZ_CREATE",
-                    "QUIZ_VIEW",
-                    "QUIZ_UPDATE",
-                    "QUIZ_DELETE",
-                    "USER_MANAGE",
-                    "USER_VIEW",
-                    "CHEATING_ANALYZE"
+                    "QUIZ_CREATE", "QUIZ_VIEW", "QUIZ_UPDATE", "QUIZ_DELETE",
+                    "USER_MANAGE", "USER_VIEW", "CHEATING_ANALYZE"
             );
 
             for (String perm : defaultPermissions) {
-                permissionRepository.findById(perm).orElseGet(() -> permissionRepository.save(
-                        Permission.builder().name(perm).description("Permission: " + perm).build()
-                ));
+                if (!permissionRepository.existsById(perm)) {
+                    permissionRepository.save(Permission.builder()
+                            .name(perm)
+                            .description("Permission: " + perm)
+                            .build());
+                }
             }
 
-            // Gán quyền cho USER_ROLE
+            // ✅ Gán quyền cho USER_ROLE
             Role userRole = roleRepository.findByName(PredefinedRole.USER_ROLE)
                     .orElseGet(() -> roleRepository.save(
                             Role.builder()
@@ -80,7 +78,7 @@ public class ApplicationInitConfig {
             userRole.setPermissions(new HashSet<>(permissionRepository.findAllById(userPermissions)));
             roleRepository.save(userRole);
 
-            // Gán toàn bộ quyền cho ADMIN_ROLE
+            // ✅ Gán toàn bộ quyền cho ADMIN_ROLE
             Role adminRole = roleRepository.findByName(PredefinedRole.ADMIN_ROLE)
                     .orElseGet(() -> roleRepository.save(
                             Role.builder()
@@ -92,7 +90,7 @@ public class ApplicationInitConfig {
             adminRole.setPermissions(new HashSet<>(permissionRepository.findAll()));
             roleRepository.save(adminRole);
 
-            // Tạo tài khoản admin mặc định nếu chưa tồn tại
+            // ✅ Tạo tài khoản admin mặc định nếu chưa có
             if (userRepository.findByUsername(ADMIN_USER_NAME).isEmpty()) {
                 User user = User.builder()
                         .username(ADMIN_USER_NAME)
@@ -102,7 +100,7 @@ public class ApplicationInitConfig {
                         .build();
 
                 userRepository.save(user);
-                log.warn("Admin user has been created with default password: admin, please change it.");
+                log.warn("⚠️ Admin user has been created with default password: admin. Please change it!");
             }
 
             log.info("✅ Application initialization completed.");

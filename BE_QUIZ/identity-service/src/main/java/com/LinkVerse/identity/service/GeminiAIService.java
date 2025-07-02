@@ -21,11 +21,12 @@ public class GeminiAIService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-//    @Value("${gemini.api.key}")
-//    private String geminiApiKey;
+    @Value("${gemini.api.key}")
+    private String geminiApiKey;
 
     @Value("${gemini.api.url}")
     private String geminiApiUrl;
+
 
     public String getQuizFeedbackFromAI(List<QuizAnswerResult> answers) {
         String prompt = buildPromptFromAnswers(answers);
@@ -77,7 +78,7 @@ public class GeminiAIService {
         for (QuizAnswerResult result : answers) {
             prompt.append("- Câu hỏi: ").append(result.getQuestionContent()).append("\n");
             prompt.append("  - Trả lời: ").append(result.getSelectedAnswer()).append(" (")
-                    .append(result.getIsCorrect() ? "Đúng" : "Sai").append(")\n");  // ✅ isCorrect() thay vì getIsCorrect()
+                  .append(result.getIsCorrect() ? "Đúng" : "Sai").append(")\n");
             prompt.append("  - Đáp án đúng: ").append(result.getCorrectAnswer()).append("\n\n");
         }
 

@@ -14,4 +14,5 @@ public interface QuizSubmissionRepository extends JpaRepository<QuizSubmission, 
     List<QuizSubmission> findByQuiz(Quiz quiz);
     int countByQuizIdAndStartedAtIsNotNull(Long quizId);
 
+
 }
