@@ -42,11 +42,11 @@ spring:
 notification:
   email:
     brevo-url: https://api.brevo.com
-    brevo-apikey: "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"
+    brevo-apikey: "--"
 
 
 
 jwt:
-  signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+  signerKey: ""
   valid-duration: 3600  # in seconds
   refreshable-duration: 720000  # in seconds
