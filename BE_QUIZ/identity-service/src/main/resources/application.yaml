@@ -27,8 +27,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 804082710912-cc625cbghektau5j0ce1j38pld82f77r.apps.googleusercontent.com
-            client-secret: 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
+            client-id: 
+            client-secret:
             scope: profile,email
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
@@ -44,11 +44,11 @@ jwt:
   refreshable-duration: 720000
 #gemini:
 #  api:
-#    key: AIzaSyCNl353aX69zYMv3kLU7i64rNLUnrCUAMI
+#    key: 
 #    url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 gemini:
   api:
-    key: AIzaSyCNl353aX69zYMv3kLU7i64rNLUnrCUAMI
+    key: 
     url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCNl353aX69zYMv3kLU7i64rNLUnrCUAMI"
 
 app:
